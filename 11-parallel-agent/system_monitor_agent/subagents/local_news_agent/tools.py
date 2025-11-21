@@ -13,7 +13,7 @@ from langchain_tavily import TavilySearch
 
 # from ...input_json import city_name, country_name, type_of_store
 
-TAVILY_API_KEY = "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"
+TAVILY_API_KEY = "<api-key>"
 
 city_name = "Mumbai"
 country_name = "India"
