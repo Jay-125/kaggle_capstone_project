@@ -43,7 +43,7 @@ import uuid
 from google.adk.runners import Runner
 import sqlite3
 
-os.environ["GOOGLE_API_KEY"] = "AIzaSyDlkCslX7yjueRw7cKDOIss9ktBk5r59LE"
+os.environ["GOOGLE_API_KEY"] = "<api-key>"
 
 # Create logs directory
 os.makedirs("logs", exist_ok=True)
