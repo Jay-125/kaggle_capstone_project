@@ -156,27 +156,27 @@ async def main():
 
 # CHECK LOGS START ==================
 
-# runner = InMemoryRunner(
-#     agent=root_agent,
-#     plugins=[
-#         LoggingPlugin()
-#     ],  # <---- 2. Add the plugin. Handles standard Observability logging across ALL agents
-# )
+runner = InMemoryRunner(
+    agent=root_agent,
+    plugins=[
+        LoggingPlugin()
+    ],  # <---- 2. Add the plugin. Handles standard Observability logging across ALL agents
+)
 
-# print("✅ Runner configured")
+print("✅ Runner configured")
 
-# print("🚀 Running agent with LoggingPlugin...")
-# print("📊 Watch the comprehensive logging output below:\n")
+print("🚀 Running agent with LoggingPlugin...")
+print("📊 Watch the comprehensive logging output below:\n")
 
-# async def main():
-#     response = await runner.run_debug("How can I increase my sales?")
-#     print("\n\n=== RESPONSE ===")
-#     logging.info(f"Agent response: {response}")
-#     print(response)
+async def main():
+    response = await runner.run_debug("How can I increase my sales?")
+    print("\n\n=== RESPONSE ===")
+    logging.info(f"Agent response: {response}")
+    print(response)
 
 
-# Run the async function
-# asyncio.run(main()) =============================
+Run the async function
+asyncio.run(main()) =============================
 print(f"\n📁 Logs saved to: {log_filename}")
 
 # CHECK LOGS END ===================
@@ -192,7 +192,7 @@ def check_data_in_db():
             print(each)
 
 
-# check_data_in_db() ============================================================
+check_data_in_db()
 
 
 # # CONTEXT ENGINEERING
