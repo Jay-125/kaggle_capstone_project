@@ -17,6 +17,7 @@ from .subagents.synthesizer_agent import fashion_report_synthesizer
 system_info_gatherer = ParallelAgent(
     name="system_info_gatherer",
     sub_agents=[retail_data_agent, local_news_agent, trending_fashion_agent],
+    # sub_agents=[retail_data_agent, trending_fashion_agent],
 )
 
 # --- 2. Create Sequential Pipeline to gather info in parallel, then synthesize ---
@@ -153,6 +154,7 @@ async def main():
         "test-db-session-01",
     )
 
+# CHECK LOGS START ==================
 
 # runner = InMemoryRunner(
 #     agent=root_agent,
@@ -174,8 +176,10 @@ async def main():
 
 
 # Run the async function
-# asyncio.run(main()) ========================================================
-# print(f"\n📁 Logs saved to: {log_filename}")
+# asyncio.run(main()) =============================
+print(f"\n📁 Logs saved to: {log_filename}")
+
+# CHECK LOGS END ===================
 
 def check_data_in_db():
     with sqlite3.connect("my_agent_data.db") as connection:
@@ -191,119 +195,126 @@ def check_data_in_db():
 # check_data_in_db() ============================================================
 
 
-# CONTEXT ENGINEERING
-async def run_session_compact(
-    runner_instance: Runner,
-    user_queries: list[str] | str = None,
-    session_name: str = "default",
-):
-    print(f"\n\n### Session: {session_name}")
+# # CONTEXT ENGINEERING
+# async def run_session_compact(
+#     runner_instance: Runner,
+#     user_queries: list[str] | str = None,
+#     session_name: str = "default",
+# ):
+#     print(f"\n\n### Session: {session_name}")
 
-    if isinstance(user_queries, str):
-        user_queries = [user_queries]
+#     if isinstance(user_queries, str):
+#         user_queries = [user_queries]
 
-    for query in user_queries:
-        print(f"\nUser > {query}")
+#     for query in user_queries:
+#         print(f"\nUser > {query}")
 
-        message = types.Content(
-            role="user",
-            parts=[types.Part(text=query)]
-        )
+#         message = types.Content(
+#             role="user",
+#             parts=[types.Part(text=query)]
+#         )
 
-        async for event in runner_instance.run_async(
-            user_id=USER_ID,
-            session_id=session_name,   # ✔ use the SAME session name every turn
-            new_message=message,
-        ):
-            if event.content and event.content.parts:
-                text = event.content.parts[0].text
-                if text and text.strip() != "None":
-                    print(f"{MODEL_NAME} > {text}")
-
-
-
-research_app_compacting = App(
-    name=APP_NAME,
-    root_agent=root_agent,
-    # This is the new part!
-    events_compaction_config=EventsCompactionConfig(
-        compaction_interval=3,  # Trigger compaction every 3 invocations
-        overlap_size=1,  # Keep 1 previous turn for context
-    ),
-)
-
-db_url = "sqlite:///my_agent_data_compact.db"  # Local SQLite file
-session_service = DatabaseSessionService(db_url=db_url)
-
-# Create a new runner for our upgraded app
-research_runner_compacting = Runner(
-    app=research_app_compacting, session_service=session_service
-)
-
-print("✅ Research App upgraded with Events Compaction!")
-
-SESSION_NAME = "test-db-session-03"
-
-async def main_turns():
-    await run_session_compact(
-        research_runner_compacting,
-        "How can I increase my sales?",
-        SESSION_NAME,
-    )
-
-    await run_session_compact(
-        research_runner_compacting,
-        "What are the products that gave me high profit based on my retail data?",
-        SESSION_NAME,
-    )
-
-    await run_session_compact(
-        research_runner_compacting,
-        "Based on trending fashion reports, which retail products might trend next?",
-        SESSION_NAME,
-    )
+#         async for event in runner_instance.run_async(
+#             user_id=USER_ID,
+#             session_id=session_name,   # ✔ use the SAME session name every turn
+#             new_message=message,
+#         ):
+#             if event.content and event.content.parts:
+#                 text = event.content.parts[0].text
+#                 if text and text.strip() != "None":
+#                     print(f"{MODEL_NAME} > {text}")
 
 
-# CHECKING FOR COMPACT SESSIONS THAT PROVES THAT WE HAVE CONTEXT ENGINEERIG IN PLACE
 
-async def check_compactness():
-    print("\n===========================CHECKING COMPACTION===========================")
+# research_app_compacting = App(
+#     name=APP_NAME,
+#     root_agent=root_agent,
+#     # This is the new part!
+#     events_compaction_config=EventsCompactionConfig(
+#         compaction_interval=2,  # Trigger compaction every 3 invocations
+#         overlap_size=1,  # Keep 1 previous turn for context
+#     ),
+# )
 
-    session = await session_service.get_session(
-        app_name=research_runner_compacting.app_name,
-        user_id=USER_ID,
-        session_id=SESSION_NAME,
-    )
+# db_url = "sqlite:///my_agent_data_compact.db"  # Local SQLite file
+# session_service = DatabaseSessionService(db_url=db_url)
 
-    print(f"\nTotal events stored: {len(session.events)}")
+# # Create a new runner for our upgraded app
+# research_runner_compacting = Runner(
+#     app=research_app_compacting, session_service=session_service
+# )
 
-    found = False
-    for event in session.events:
-        # ADK v0.3+ compaction events use type="compaction"
-        if getattr(event, "type", None) == "compaction":
-            print("\n✅ FOUND COMPACTION EVENT!")
-            print("Summary contents:\n", event.compaction)
-            found = True
-            break
+# print("✅ Research App upgraded with Events Compaction!")
 
-    if not found:
-        print("\n❌ No compaction event found. (Did you run 3+ turns?)")
+# SESSION_NAME = "test-db-session-03"
+
+# async def main_turns():
+#     await run_session_compact(
+#         research_runner_compacting,
+#         "How can I increase my sales?",
+#         SESSION_NAME,
+#     )
+
+#     await run_session_compact(
+#         research_runner_compacting,
+#         "What are the products that gave me high profit based on my retail data?",
+#         SESSION_NAME,
+#     )
+
+#     await run_session_compact(
+#         research_runner_compacting,
+#         "Based on trending fashion reports, which retail products might trend next?",
+#         SESSION_NAME,
+#     )
+
+#     await run_session_compact(
+#         research_runner_compacting,
+#         "Suggest me, how can I do invest money in ads to increase my sales",
+#         SESSION_NAME,
+#     )
 
 
-print ("===========================CHECKING FOR COMPACT DATA=======================================")
+# # CHECKING FOR COMPACT SESSIONS THAT PROVES THAT WE HAVE CONTEXT ENGINEERIG IN PLACE
 
-async def main_compact():
-    # ✅ Create DB session once so runner can write into it
-    try:
-        await session_service.create_session(
-            app_name=research_runner_compacting.app_name,
-            user_id=USER_ID,
-            session_id=SESSION_NAME,
-        )
-    except:
-        pass  # session already exists
+# async def check_compactness():
+#     print("\n===========================CHECKING COMPACTION===========================")
 
-    await main_turns()
-    await check_compactness()
+#     session = await session_service.get_session(
+#         app_name=research_runner_compacting.app_name,
+#         user_id=USER_ID,
+#         session_id=SESSION_NAME,
+#     )
 
-asyncio.run(main_compact())
+#     print(f"\nTotal events stored: {len(session.events)}")
+
+#     found = False
+#     for event in session.events:
+#         # ADK v0.3+ compaction events use type="compaction"
+#         print(event)
+#         if getattr(event, "type", None) == "compaction":
+#             print("\n✅ FOUND COMPACTION EVENT!")
+#             print("Summary contents:\n", event.compaction)
+#             found = True
+#             break
+
+#     if not found:
+#         print("\n❌ No compaction event found. (Did you run 3+ turns?)")
+
+
+# print ("===========================CHECKING FOR COMPACT DATA=======================================")
+
+# async def main_compact():
+#     # ✅ Create DB session once so runner can write into it
+#     try:
+#         await session_service.create_session(
+#             app_name=research_runner_compacting.app_name,
+#             user_id=USER_ID,
+#             session_id=SESSION_NAME,
+#         )
+#     except:
+#         pass  # session already exists
+
+#     await main_turns()
+#     await check_compactness()
+
+# # asyncio.run(main_compact()) ====================================
