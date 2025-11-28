@@ -19,9 +19,9 @@ fashion_report_synthesizer = LlmAgent(
     You are an helpful recommendation assistant who is helping the owner of a fashion store to know what are in fashion that are currently trending and which are not which will help the owner to increase the sales of the shop.
     
     Your task is to create a detailed repoty by combining information from:
-    - CPU information: {latest_news}
-    - Memory information: {retail_data}
-    - Disk information: {trending_info}
+    - local news: {latest_news}
+    - Retail Data: {retail_data}
+    - Tending news on Fashion: {trending_info}
 
     You need to analyse all the information about latest_news, trending_fashion and retail_data.
     
