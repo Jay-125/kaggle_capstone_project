@@ -3,8 +3,29 @@
 
 # 🧵 Fashion Advisor — Multi-Agent, LLM-Powered Retail Intelligence System
 
-The **Fashion Advisor** is a fully-featured, production-grade **multi-agent system** designed to increase retail fashion sales using **local news**, **trending fashion insights**, and **historical retail performance data**.  
-This project demonstrates advanced usage of **parallel and sequential LLM agents**, **custom tools**, **built-in search utilities**, **stateful session orchestration**, **long-term memory**, **observability**, and inter-agent communication using the **A2A Protocol**.
+## Problem Statement
+
+Fashion retail moves incredibly fast, and most small and mid-size stores struggle to keep up with the pace of changing trends and customer preferences. Store owners often make merchandising and discount decisions based on intuition, fragmented data, or outdated information.
+
+This leads to several enterprise-level challenges:
+
+* **`Inventory misalignment`** – Overstocking slow sellers and under-promoting trending items
+* **`Inefficient merchandising`** – Displays and promotions that don’t reflect current demand
+* **`Slow reaction to local events`** – Missing opportunities tied to festivals, weather, or community happenings
+* **`Low data visibility`** – No integrated way to combine sales, trends, and market signals
+
+These issues directly reduce sales, increase waste, and limit competitive advantage. Retailers need a system that continuously monitors trends, local context, and store performance to guide merchandising decisions in real time.
+
+## Proposed Solution
+
+I built a multi-agent retail intelligence system called **`Fashion Advisor`**, designed to help fashion stores increase sales by aligning their merchandising with real-time trends and local market conditions.
+
+> **`retail_data_agent`** – Analyzes store sales, profitability, and product performance.
+> **`trending_fashion_agent`** – Uses an internal AgentTool **`get_latest_trending_fashion_news`** to gather the latest global fashion news and trend signals.
+> **`local_news_agent`** – Monitors local events, holidays, weather updates, and regional news that may affect demand.
+> **`synthesizer_agent`** – Combines insights from all agents and produces a final, actionable recommendation report, such as what to display, what to discount, and which categories to highlight.
+
+The result is a dynamic, automated advisor that behaves like a virtual team of analysts, providing real-time, revenue-focused merchandising suggestions for fashion retailers.
 
 ---
 
@@ -13,7 +34,6 @@ This project demonstrates advanced usage of **parallel and sequential LLM agents
 - **LLM-powered agents** (Gemini) orchestrated as both *parallel* and *sequential workflows*  
 - **Custom tools + Built-in Google Search (google-adk)** for data retrieval and analysis  
 - **Session & state management** using `InMemorySessionService`  
-- **Long-term memory** with `MemoryBank` for persistent insight across sessions  
 - **Context engineering**, including **context compaction**, to efficiently manage long inputs  
 - **Observability** using logs, traces, and metrics  
 - **Automatic agent evaluation** for quality and correctness  
@@ -46,14 +66,12 @@ This project demonstrates advanced usage of **parallel and sequential LLM agents
             ├── __init__.py
             ├── agent.py
             └── tools.py
-         .env
          agent.py
    agent_for_a2a/
    ├── __init__.py
    ├── a2a_server.py
    ├── agent.py
    └── test_a2a.py
-
 README.md
 requirements.txt
 ```
@@ -62,7 +80,7 @@ requirements.txt
 
 ## 🧠 System Architecture
 
-![arch diagram](./screenshots/architecture_diagram.jpg)
+![arch diagram](./screenshots/architecture_diagram_with_a2a.jpg)
 
 The Fashion Advisor uses **five major agents**, each powered by **Google Gemini models**, working together to produce a final, actionable sales strategy.
 
@@ -141,7 +159,7 @@ All tools have been validated and tested within the agent workflows.
 - Maintains conversation state across agent cycles  
 - Enables session continuity for repeated analysis
 
-### ✔ Long-Term Memory with `MemoryBank`
+### ✔ Long-Term Memory
 - Stores:
   - historical recommendations  
   - trending patterns  
@@ -343,3 +361,90 @@ def check_data_in_db():
 For context engineering check below attacked kaggle notebook link that explains the concept of data compaction in deep.
 
 [Kaggle Notebook: Context Engineering](https://www.kaggle.com/code/jaypathak08/context-engineering)
+
+
+# Fashion Advisor (Version 2) 
+
+## Below is another version that executes `local_news_agent` parallely
+
+---
+
+## 🧠 System Architecture
+
+![arch diagram](./screenshots/arch_diagram.jpg)
+
+The Fashion Advisor uses **five major agents**, each powered by **Google Gemini models**, working together to produce a final, actionable sales strategy.
+
+### 🔹 1. `retail_data_agent`
+- Analyzes store sales history  
+- Identifies profitable / underperforming products  
+- Uses custom tools defined in `tools.py`
+
+### 🔹 2. `trending_fashion_agent`
+- Fetches trending fashion news  
+- Uses a custom tool: [`get_latest_trending_fashion_news`]  
+- Integrates the built-in **Google Search tool**
+
+### 🔹 3. `get_latest_trending_fashion_news` (Tool Agent)
+- A dedicated agent acting as a tool interface  
+- Performs live queries to gather trending fashion insights
+
+### 🔹 4. `local_news_agent`
+- Fetches local news 
+- Uses custom tools defined in `tools.py` which uses `travvilysearch` web search tool. 
+
+### 🔹 5. `synthesizer_agent`
+- **Sequential master agent**  
+- Combines:
+  - retail data  
+  - trending fashion signals  
+  - local news
+- Generates final, detailed recommendations:
+  - Suggested product displays  
+  - Discount decisions  
+  - New marketing angles  
+  - Inventory priorities
+
+
+Below is the data flow diagram, how the information flow through the system.
+
+![data flow diagram](./screenshots/data_flow_diagram.jpg)
+
+---
+
+## ⚙️ Workflow Orchestration
+
+### 🟦 Parallel Agents
+- `trending_fashion_agent`, `retail_data_agent`, and `local_news_agent` queries run in **parallel** for high speed.
+
+### 🟥 Sequential Agents
+- The `synthesizer_agent` runs **after** the parallel agents finish.
+
+---
+
+## ▶️ Running the Fashion Advisor (version 2)
+
+1. Install requirements:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Now to run the workflow end-to-end, navigate inside folder 11-parallel-agent and run below command
+
+```bash
+adk web
+```
+You will get web UI like below in which you can input your query.
+
+3. Once you fire a query, you will see all the agents in action.
+
+![adk UI](./screenshots/adk_UI_without_a2a.jpg)
+
+4. By clicking on the `Trace` section, you can see the detailed view of flow.
+
+![trace](./screenshots/trace_without_a2a.jpg)
+
+5. Navigate to events and click on any event to check the flow.
+
+![event](./screenshots/flow_without_a2a.jpg)
