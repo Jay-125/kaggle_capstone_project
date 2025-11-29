@@ -16,9 +16,12 @@ from google.adk.models.google_llm import Gemini
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+import os
 
 # Hide additional warnings in the notebook
 import warnings
+
+os.environ["GOOGLE_API_KEY"] = "<api-key>"
 
 agent_for_a2a = Agent(
     name="agent_for_a2a",
@@ -51,4 +54,5 @@ app = agent_for_a2a_app
 print("✅ Product Catalog Agent is now A2A-compatible!")
 print("   Agent will be served at: http://localhost:8001")
 print("   Agent card will be at: http://localhost:8001/.well-known/agent-card.json")
+
 print("   Ready to start the server...")
