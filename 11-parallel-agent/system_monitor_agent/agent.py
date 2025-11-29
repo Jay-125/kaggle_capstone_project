@@ -16,8 +16,8 @@ from .subagents.synthesizer_agent import fashion_report_synthesizer
 # --- 1. Create Parallel Agent to gather information concurrently ---
 system_info_gatherer = ParallelAgent(
     name="system_info_gatherer",
-    sub_agents=[retail_data_agent, local_news_agent, trending_fashion_agent],
-    # sub_agents=[retail_data_agent, trending_fashion_agent],
+    # sub_agents=[retail_data_agent, local_news_agent, trending_fashion_agent],
+    sub_agents=[retail_data_agent, trending_fashion_agent],
 )
 
 # --- 2. Create Sequential Pipeline to gather info in parallel, then synthesize ---
@@ -175,9 +175,9 @@ async def main():
     print(response)
 
 
-Run the async function
-asyncio.run(main()) =============================
-print(f"\n📁 Logs saved to: {log_filename}")
+# Run the async function
+# asyncio.run(main()) =============================
+# print(f"\n📁 Logs saved to: {log_filename}")
 
 # CHECK LOGS END ===================
 
@@ -192,7 +192,7 @@ def check_data_in_db():
             print(each)
 
 
-check_data_in_db()
+# check_data_in_db()
 
 
 # # CONTEXT ENGINEERING
