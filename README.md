@@ -235,13 +235,13 @@ This allows dynamic, cross-agent collaboration without breaking the workflow.
 
 > NOTE: Add 'GOOGLE_API_KEY' in below files.
 
-`system_monitor_agent/agent.py`
-`agent_for_a2a/agent.py`
-`agent_for_a2a/a2a_server.py`
+> `system_monitor_agent/agent.py`
+> `agent_for_a2a/agent.py`
+> `agent_for_a2a/a2a_server.py`
 
-And update travilysearch api in below file
+> And update travilysearch api in below file
 
-`system_monitor_agent/subagents/local_news_agent/tools.py`
+> `system_monitor_agent/subagents/local_news_agent/tools.py`
 
 1. Install requirements:
 
