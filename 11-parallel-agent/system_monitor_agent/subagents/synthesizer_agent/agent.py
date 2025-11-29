@@ -6,6 +6,17 @@ to create a comprehensive system health report.
 """
 
 from google.adk.agents import LlmAgent
+from google.adk.agents.remote_a2a_agent import (
+    RemoteA2aAgent,
+    AGENT_CARD_WELL_KNOWN_PATH,
+)
+
+remote_news_agent = RemoteA2aAgent(
+    name="remote_news_agent",
+    description="Remote agent that fetches local news.",
+    # Point to the agent card URL - this is where the A2A protocol metadata lives
+    agent_card=f"http://localhost:8001{AGENT_CARD_WELL_KNOWN_PATH}",
+)
 
 # --- Constants ---
 GEMINI_MODEL = "gemini-2.0-flash"
@@ -19,7 +30,6 @@ fashion_report_synthesizer = LlmAgent(
     You are an helpful recommendation assistant who is helping the owner of a fashion store to know what are in fashion that are currently trending and which are not which will help the owner to increase the sales of the shop.
     
     Your task is to create a detailed repoty by combining information from:
-    - local news: {latest_news}
     - Retail Data: {retail_data}
     - Tending news on Fashion: {trending_info}
 
@@ -34,4 +44,5 @@ fashion_report_synthesizer = LlmAgent(
     Highlight any concerning values and provide practical recommendations.
     """,
     description="Synthesizes all information into a comprehensive report",
+    sub_agents = [remote_news_agent]
 )
