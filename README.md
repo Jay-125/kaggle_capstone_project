@@ -1,6 +1,3 @@
-# kaggle_capstone_project
-
-
 # 🧵 Fashion Advisor — Multi-Agent, LLM-Powered Retail Intelligence System
 
 ## Problem Statement
